@@ -1,4 +1,6 @@
+import math
 import random
+from array import array
 from random import randint
 import matplotlib.pyplot as plt
 import sys
@@ -44,10 +46,8 @@ culori_zona = {
 X = []
 Y = []
 culori = []
+numarDeCentroizi = randint(2, 10)
 
-def generareCentroizi():
-    with open(centroizi, 'a') as f:
-        f.write(f"{randint(1, 10)} {randint} \n")
 
 def alege_valoarea_pt_coord():
     coord=randint(-300,300)
@@ -91,30 +91,52 @@ def verifPragx(x,zona):
         x = alege_valoarea_pt_coord()
         verifPragx(x,zona)
 
+def generareCentroizi():
+    k = nrOfCentroizi
+    while True:
+        if k >0:
+            with open(centroizi, 'a') as f:
+                f.write(f"{randint(-300,300)} {randint(-300,300)} \n")
+            k = k - 1
+        else: break
+
+def calcululSimilaritatii(coordXintrare, coordYintrare):
+    distanta = []
+    with open(centroizi, 'r') as f:
+        for linie in f:
+            coordonate = linie.split()
+            distanta.add(math.sqrt((coordonate[0] - coordXintrare) ** 2 + (coordonate[1] - coordYintrare) ** 2))
+            if distanta[linie-1] < distanta[linie]:
+                coordatrX = coordonate[0]
+                coordatrY = coordonate[1]
+            elif distanta[linie-1] == distanta[linie]
+
 
 #Algoritm Generare puncte
 Zona = random.choice([zona1, zona2, zona3])
 x = alege_valoarea_pt_coord()
 verifPragx(x,Zona)
 
-# AFISARE
-with open(file_name , 'r') as f:
-    for linie in f:
-        coordonate = linie.split()
-        X.append(float(coordonate[0]))
-        Y.append(float(coordonate[1]))
-        zona = coordonate[2]
-        culori.append(culori_zona[zona])
 
-# Desenăm punctele pe grafic
-plt.scatter(X,  Y, c=culori, s=1)
 
-# Etichete și titlu pentru grafic
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.title("Punctele colorate în funcție de zona")
-plt.axhline(0,color = 'black', linewidth = 0.9)
-plt.axvline(0,color = 'black', linewidth = 0.9)
-# Afișăm graficul
-plt.show()
+# # AFISARE generarea setului de date
+# with open(file_name , 'r') as f:
+#     for linie in f:
+#         coordonate = linie.split()
+#         X.append(float(coordonate[0]))
+#         Y.append(float(coordonate[1]))
+#         zona = coordonate[2]
+#         culori.append(culori_zona[zona])
+#
+# # Desenăm punctele pe grafic
+# plt.scatter(X,  Y, c=culori, s=1)
+#
+# # Etichete și titlu pentru grafic
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.title("Punctele colorate în funcție de zona")
+# plt.axhline(0,color = 'black', linewidth = 0.9)
+# plt.axvline(0,color = 'black', linewidth = 0.9)
+# # Afișăm graficul
+# plt.show()
 
