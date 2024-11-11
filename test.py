@@ -43,6 +43,7 @@ culori_zona = {
 X = []
 Y = []
 culori = []
+numarDeCentroizi = randint(2, 10)
 centroizi = []
 cluster_dict = {}
 E_trecut = None
@@ -103,9 +104,8 @@ def generareCentroizi():
         else: break
 
 def distanta_Euclidiana(centroid, punct):
-    distanta = math.sqrt((int(centroid[0]) - int(punct[0])) ** 2 + (int(centroid[1]) - int(punct[1])) ** 2)
+    distanta = math.sqrt((int(centroid[0]) - int(punct[0])) ** 2 + (int(centroid[0]) - int(punct[1])) ** 2)
     return distanta
-
 
 def grupareDupaCentroid():
     with open(file_name, 'r') as f:
@@ -116,7 +116,7 @@ def grupareDupaCentroid():
             punct = (int(punct[0]), int(punct[1]))
             for centroid in centroizi:
                 distanta = distanta_Euclidiana(centroid, punct)
-                if distanta < distanta_minima or distanta == distanta_minima:
+                if distanta < distanta_minima:
                     distanta_minima = distanta
                     centroid_apropiat = centroid
             cluster_dict[centroid_apropiat].append(punct)
@@ -175,14 +175,15 @@ plt.scatter(X,  Y, c='pink', s=0.5)
 generareCentroizi()
 grupareDupaCentroid()
 calculCentruDeGreutate()
+cx, cy = zip(*centroizi)
+plt.scatter(cx, cy, c ='black', s=2)
 E_curent = round(convergenta(), 4)
-while True:
-    if E_trecut == E_curent: break
+while E_trecut != E_curent:
     E_trecut = E_curent
     stergerePuncte()
     grupareDupaCentroid()
     calculCentruDeGreutate()
-    E_curent = round(convergenta(), 4)
-cx, cy = zip(*centroizi)
-plt.scatter(cx, cy, c='black', s=2)
+    cx, cy = zip(*centroizi)
+    plt.scatter(cx, cy, c='black', s=2)
+    round(convergenta(), 4)
 plt.show()
