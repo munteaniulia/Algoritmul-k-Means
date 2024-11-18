@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import sys
 import numpy as np
 import time  # Importăm modulul pentru pauze
+from PIL import Image
+from io import BytesIO
 
 sys.setrecursionlimit(10000000)
 
@@ -19,7 +21,7 @@ zona2 = {"name": "zona2", "mx": -100, "my": 110, "sigmax": 15, "sigmay": 10}
 zona3 = {"name": "zona3", "mx": 210, "my": -150, "sigmax": 5, "sigmay": 20}
 culori_zona = {'zona1': 'red', 'zona2': 'blue', 'zona3': 'green'}
 
-X, Y, culori, centroizi, cluster_dict = [], [], [], [], {}
+X, Y, culori, centroizi, cluster_dict= [], [], [], [], {}
 E_trecut = None
 
 
@@ -115,7 +117,6 @@ def stergerePuncte():
     for centroid in cluster_dict:
         cluster_dict[centroid] = []
 
-
 # Generare puncte
 Zona = random.choice([zona1, zona2, zona3])
 x = alege_valoarea_pt_coord()
@@ -158,6 +159,11 @@ while True:
     plt.pause(0.5)
 
     if E_trecut == E_curent:
+        buf = BytesIO()
+        plt.savefig(buf, format='png', dpi=100)
+        buf.seek(0)
+        ultima_imagine = Image.open(buf).copy()
+        buf.close()
         break
     E_trecut = E_curent
     stergerePuncte()
@@ -166,4 +172,28 @@ while True:
     E_curent = round(convergenta(), 4)
     epoca += 1
 
+ultima_imagine = ultima_imagine.convert("RGB")
+latime, inaltime = ultima_imagine.size
+testare_dict = dict.fromkeys(cluster_dict.keys(), [])
+
+for y in range(inaltime):
+    for x in range(latime):
+        pixel = (x, y)
+        distanta_minima, centroid_apropiat = float('inf'), None
+        for centroid in centroizi:
+            distanta = distanta_Euclidiana(centroid, pixel)
+            if distanta < distanta_minima:
+                distanta_minima, centroid_apropiat = distanta, centroid
+        testare_dict[centroid_apropiat].append(pixel)
+
+plt.figure()
+colors = plt.cm.rainbow(np.linspace(0, 1, len(centroizi)))
+for idx, (centroid, pixeli) in enumerate(testare_dict.items()):
+    cx, cy = zip(*pixeli) if pixeli else ([], [])
+    plt.scatter(cx, cy, color=colors[idx], s=1)
+plt.scatter(*zip(*centroizi), color='black', s=10, marker='x')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.title(f"Epoca {epoca}")
+plt.pause(0.5)
 plt.show()
