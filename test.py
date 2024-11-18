@@ -77,7 +77,6 @@ def generareCentroizi():
             f.write(f"{x} {y}\n")
         k -= 1
 
-
 def distanta_Euclidiana(centroid, punct):
     return math.sqrt((centroid[0] - punct[0]) ** 2 + (centroid[1] - punct[1]) ** 2)
 
@@ -113,11 +112,12 @@ def convergenta():
     return E_curent
 
 
-def stergerePuncte():
-    for centroid in cluster_dict:
-        cluster_dict[centroid] = []
+def stergerePuncte(dict):
+    for centroid in dict:
+        dict[centroid] = []
 
 # Generare puncte
+
 Zona = random.choice([zona1, zona2, zona3])
 x = alege_valoarea_pt_coord()
 verifPragx(x, Zona)
@@ -166,7 +166,7 @@ while True:
         buf.close()
         break
     E_trecut = E_curent
-    stergerePuncte()
+    stergerePuncte(cluster_dict)
     grupareDupaCentroid()
     calculCentruDeGreutate()
     E_curent = round(convergenta(), 4)
@@ -174,10 +174,12 @@ while True:
 
 ultima_imagine = ultima_imagine.convert("RGB")
 latime, inaltime = ultima_imagine.size
-testare_dict = dict.fromkeys(cluster_dict.keys(), [])
+testare_dict = deepcopy(cluster_dict)
+stergerePuncte(testare_dict)
 
-for y in range(inaltime):
-    for x in range(latime):
+
+for y in range(-300, inaltime):
+    for x in range(-300, latime):
         pixel = (x, y)
         distanta_minima, centroid_apropiat = float('inf'), None
         for centroid in centroizi:
@@ -187,13 +189,14 @@ for y in range(inaltime):
         testare_dict[centroid_apropiat].append(pixel)
 
 plt.figure()
-colors = plt.cm.rainbow(np.linspace(0, 1, len(centroizi)))
 for idx, (centroid, pixeli) in enumerate(testare_dict.items()):
-    cx, cy = zip(*pixeli) if pixeli else ([], [])
-    plt.scatter(cx, cy, color=colors[idx], s=1)
+    if pixeli:
+        plt.scatter( *zip(*pixeli), color=colors[idx], s=1)
 plt.scatter(*zip(*centroizi), color='black', s=10, marker='x')
+plt.xlim(-300, 300)
+plt.ylim(-300, 300)
+
 plt.xlabel("X")
 plt.ylabel("Y")
-plt.title(f"Epoca {epoca}")
-plt.pause(0.5)
+plt.title(f"Testare")
 plt.show()
